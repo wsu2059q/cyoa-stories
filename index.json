@@ -19,7 +19,10 @@
       "author": "Star",
       "version": "1.0.0",
       "description": "一个XP承受度测试，算法与内容来自网络",
-      "tags": ["test", "nsfw"],
+      "tags": [
+        "test",
+        "nsfw"
+      ],
       "language": "zh-CN"
     }
   ]
