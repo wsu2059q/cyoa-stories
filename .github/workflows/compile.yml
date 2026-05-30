@@ -9,30 +9,32 @@ on:
 jobs:
   compile:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@v4
 
-      - uses: actions/setup-node@v4
-        with:
-          node-version: "20"
-
-      - name: Install inklecate
-        run: npm install -g inklecate
+      - name: Download inklecate
+        run: |
+          curl -sL https://github.com/inkle/ink/releases/latest/download/inklecate_linux.zip -o inklecate.zip
+          unzip inklecate.zip
+          chmod +x inklecate
+          ./inklecate --version
 
       - name: Compile all .ink files
         run: |
           mkdir -p stories
-          find source -name "story.ink" | while read src; do
+          find source -name "*.ink" | while read src; do
             dir=$(dirname "$src")
             id=$(basename "$dir")
             mkdir -p "stories/$id"
             echo "Compile $src -> stories/$id/story.ink.json"
-            inklecate -o "stories/$id/story.ink.json" "$src"
+            ./inklecate -o "stories/$id/story.ink.json" "$src"
           done
 
       - name: Validate output
         run: |
-          echo "Compiled stories:"
+          echo "Compiled:"
           find stories -name "*.ink.json" -exec echo "  {}" \;
 
       - name: Commit compiled output
@@ -41,7 +43,7 @@ jobs:
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add stories/
           if git diff --cached --quiet; then
-            echo "No changes to commit"
+            echo "No changes"
           else
             git commit -m "Auto: compile ink stories"
             git push
