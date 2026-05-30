@@ -1,4 +1,6 @@
+# title: 虚无
 # author: 某个不想写名字的人
+# description: 你在虚无中醒来，周围什么都没有。
 # image: https://example.com/void.png
 
 VAR 虚无感 = 0

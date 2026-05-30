@@ -1,4 +1,8 @@
+# title: XP承受度测试
 # author: Star
+# description: 一个XP承受度测试，算法与内容来自网络
+# tags: test, nsfw
+
 //深渊凝视着你
 VAR point = 0
 ->CHECK_START

@@ -37,11 +37,78 @@ jobs:
           echo "Compiled:"
           find stories -name "*.ink.json" -exec echo "  {}" \;
 
+      - name: Update index.json
+        run: |
+          python3 -c "
+          import os, json, glob
+
+          index_path = 'index.json'
+          if os.path.exists(index_path):
+              with open(index_path, 'r', encoding='utf-8') as f:
+                  index = json.load(f)
+          else:
+              index = {'name': 'CYOA 故事仓库', 'description': 'ErisPulse-CYOA 互动小说合集', 'maintainer': 'wsu2059q', 'stories': []}
+
+          existing = {s['id']: s for s in index.get('stories', [])}
+          stories = []
+
+          for src_dir in sorted(glob.glob('source/*/')):
+              story_id = os.path.basename(os.path.normpath(src_dir))
+              ink_files = glob.glob(os.path.join(src_dir, '*.ink'))
+              if not ink_files:
+                  continue
+
+              meta = existing.get(story_id, {})
+              meta.setdefault('id', story_id)
+              meta.setdefault('title', story_id)
+              meta.setdefault('version', '1.0.0')
+              meta.setdefault('description', '')
+              meta.setdefault('tags', [])
+              meta.setdefault('language', 'zh-CN')
+
+              with open(ink_files[0], 'r', encoding='utf-8') as f:
+                  for line in f:
+                      line = line.strip()
+                      if not line.startswith('#'):
+                          break
+                      if ':' in line:
+                          key, _, val = line[1:].partition(':')
+                          key = key.strip().lower()
+                          val = val.strip()
+                          if key == 'author':
+                              meta['author'] = val
+                          elif key == 'title':
+                              meta['title'] = val
+                          elif key == 'description':
+                              meta['description'] = val
+                          elif key == 'version':
+                              meta['version'] = val
+                          elif key == 'tags':
+                              meta['tags'] = [t.strip() for t in val.split(',') if t.strip()]
+                          elif key == 'language':
+                              meta['language'] = val
+                          elif key == 'image':
+                              meta['image'] = val
+
+              if 'author' not in meta:
+                  meta['author'] = ''
+
+              stories.append(meta)
+
+          index['stories'] = stories
+          with open(index_path, 'w', encoding='utf-8') as f:
+              json.dump(index, f, ensure_ascii=False, indent=2)
+              f.write('\n')
+
+          print('Updated index.json:')
+          print(json.dumps(index, ensure_ascii=False, indent=2))
+          "
+
       - name: Commit compiled output
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add stories/
+          git add stories/ index.json
           if git diff --cached --quiet; then
             echo "No changes"
           else
