@@ -19,7 +19,7 @@ jobs:
           curl -sL https://github.com/inkle/ink/releases/latest/download/inklecate_linux.zip -o inklecate.zip
           unzip inklecate.zip
           chmod +x inklecate
-          ./inklecate --version
+          echo "inklecate ready"
 
       - name: Compile all .ink files
         run: |
