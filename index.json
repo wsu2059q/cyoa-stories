@@ -4,16 +4,6 @@
   "maintainer": "wsu2059q",
   "stories": [
     {
-      "id": "test",
-      "title": "test",
-      "version": "1.0.0",
-      "description": "",
-      "tags": [],
-      "language": "zh-CN",
-      "author": "Ink Tester",
-      "image": "https://http.cat/200"
-    },
-    {
       "id": "void",
       "title": "虚无",
       "author": "某个不想写名字的人",
