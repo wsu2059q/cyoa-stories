@@ -22,9 +22,7 @@ VAR dragon_defeated = false
 ~ visited_garden = true
 ~ gold += 10
 你得到了 10 枚金币！金币总数：{gold}
-
 # image: https://http.cat/201
-
 * 继续前进 -> start
 * 再许一次愿 -> lucky_wheel
 
@@ -36,24 +34,20 @@ VAR dragon_defeated = false
 
 === castle_hall
 城堡大厅空旷而阴森。HP: {hp}
-
 { hp < 30: # image: https://http.cat/403 }
 { hp >= 30: # image: https://http.cat/200 }
-
 * 上楼 -> upper_floor
 * 进入厨房 -> kitchen
 * 回到大门 -> start
 
 === kitchen
 你发现了一些食物。
-
 { gold >= 20:
     ~ gold -= 20
     ~ hp += 30
     你花了 20 金币买了魔法食物，恢复 30 HP。HP: {hp}
     -> castle_hall
 }
-
 { gold < 20:
     你太穷了，买不起食物。
     -> castle_hall
@@ -62,7 +56,6 @@ VAR dragon_defeated = false
 === upper_floor
 你来到了二层，有三扇门。
 # image: https://http.cat/302
-
 * 打开第一扇门 -> treasure_room
 * 打开第二扇门 -> riddle_room
 * 打开第三扇门 -> dragon_lair
@@ -77,7 +70,6 @@ VAR dragon_defeated = false
 === riddle_room
 一个幽灵问你："什么东西越洗越脏？"
 # image: https://http.cat/418
-
 * 水 -> riddle_wrong
 * 手 -> riddle_wrong
 * 答案 -> riddle_wrong
@@ -99,29 +91,26 @@ HP: {hp}
 { dragon_defeated:
     -> castle_hall
 }
-
 巨龙苏醒！
 # image: https://http.cat/500
-
 -> fight_dragon
 
 === fight_dragon
 VAR attack_count = 0
-
 - (fight_loop)
-  第 {attack_count + 1} 次攻击
-  ~ attack_count++
-  { attack_count <= 3:
-      ~ dragon_defeated = true
-      ~ gold += 100
-      你击中了巨龙！击败巨龙获得 100 金币。
-      金币：{gold}
-      -> dragon_victory
-  }
-  { attack_count > 3:
-      你躲开了攻击...
-      -> fight_loop
-  }
+第 {attack_count + 1} 次攻击
+~ attack_count++
+{ attack_count <= 3:
+    ~ dragon_defeated = true
+    ~ gold += 100
+    你击中了巨龙！击败巨龙获得 100 金币。
+    金币：{gold}
+    -> dragon_victory
+}
+{ attack_count > 3:
+    你躲开了攻击...
+    -> fight_loop
+}
 
 === dragon_victory
 巨龙倒下了。
