@@ -3,122 +3,78 @@
 
 VAR hp = 100
 VAR gold = 0
-VAR visited_garden = false
-VAR dragon_defeated = false
+VAR has_key = false
 
 -> start
 
 === start
-你站在一座神秘城堡的大门前。
+你站在一个神秘的森林入口。
 
-{ visited_garden: 你记得之前来过花园。 }
+# image: https://http.cat/200
 
-* 进入城堡大门 -> castle_hall
-+ 探索花园 { not visited_garden } -> garden
+* 进入森林 -> forest_path
 * 离开这里 -> leave
 
-=== garden
-你走进花园，发现一口许愿井。
-~ visited_garden = true
-~ gold += 10
-你得到了 10 枚金币！金币总数：{gold}
+=== forest_path
+你在森林中走着，突然遇到一个岔路口。
+
 # image: https://http.cat/201
-* 继续前进 -> start
-* 再许一次愿 -> lucky_wheel
 
-=== lucky_wheel
-你的运气：{~大成功|成功|普通|失败|大失败}
-~hp -= 5
-你消耗了 5 点 HP。当前 HP：{hp}
--> garden
+* 向左走 -> left_path
+* 向右走 -> right_path
 
-=== castle_hall
-城堡大厅空旷而阴森。HP: {hp}
-{ hp < 30: # image: https://http.cat/403 }
-{ hp >= 30: # image: https://http.cat/200 }
-* 上楼 -> upper_floor
-* 进入厨房 -> kitchen
-* 回到大门 -> start
+=== left_path
+你发现了一个宝箱！
 
-=== kitchen
-你发现了一些食物。
-{ gold >= 20:
-    ~ gold -= 20
-    ~ hp += 30
-    你花了 20 金币买了魔法食物，恢复 30 HP。HP: {hp}
-    -> castle_hall
-}
-{ gold < 20:
-    你太穷了，买不起食物。
-    -> castle_hall
+{ gold >= 50:
+    宝箱是空的，已经被拿走了。
+    -> forest_path
 }
 
-=== upper_floor
-你来到了二层，有三扇门。
-# image: https://http.cat/302
-* 打开第一扇门 -> treasure_room
-* 打开第二扇门 -> riddle_room
-* 打开第三扇门 -> dragon_lair
-
-=== treasure_room
-# image: https://http.cat/202
-满地金币！
 ~ gold += 50
-金币：{gold}
--> castle_hall
+你获得了 50 金币！现在有 {gold} 金币。
 
-=== riddle_room
-一个幽灵问你："什么东西越洗越脏？"
-# image: https://http.cat/418
-* 水 -> riddle_wrong
-* 手 -> riddle_wrong
-* 答案 -> riddle_wrong
-* 时间 -> riddle_correct
+# image: https://http.cat/202
 
-=== riddle_wrong
-幽灵摇摇头。
-~ hp -= 15
-HP: {hp}
--> castle_hall
+* 继续前进 -> forest_path
+* 返回 -> start
 
-=== riddle_correct
-幽灵满意地消失了。
-~ gold += 30
-金币：{gold}
--> castle_hall
+=== right_path
+你遇到了一个守卫。
 
-=== dragon_lair
-{ dragon_defeated:
-    -> castle_hall
-}
-巨龙苏醒！
-# image: https://http.cat/500
--> fight_dragon
+# image: https://http.cat/403
 
-=== fight_dragon
-VAR attack_count = 0
-- (fight_loop)
-第 {attack_count + 1} 次攻击
-~ attack_count++
-{ attack_count <= 3:
-    ~ dragon_defeated = true
-    ~ gold += 100
-    你击中了巨龙！击败巨龙获得 100 金币。
-    金币：{gold}
-    -> dragon_victory
-}
-{ attack_count > 3:
-    你躲开了攻击...
-    -> fight_loop
+* 战斗 -> fight
+* 贿赂 { gold >= 30 } -> bribe
+* 逃跑 -> forest_path
+
+=== fight
+~ hp -= 20
+你损失了 20 HP，当前 HP：{hp}
+
+{ hp <= 0:
+    -> death
 }
 
-=== dragon_victory
-巨龙倒下了。
-# image: https://http.cat/204
--> castle_hall
+{ hp > 0:
+    你打败了守卫！
+    ~ gold += 30
+    获得 30 金币！
+    -> forest_path
+}
+
+=== bribe
+~ gold -= 30
+你给了守卫 30 金币，他让路了。剩余金币：{gold}
+-> forest_path
 
 === leave
-你离开了城堡，故事结束。
+你离开了森林，故事结束。
+-> DONE
+
+=== death
+你倒在了森林中...
+# image: https://http.cat/500
 -> DONE
 
 === DONE
